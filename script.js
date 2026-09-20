@@ -1,15 +1,33 @@
 (function () {
   'use strict';
 
-  // Если игра открыта внутри Telegram, разворачиваем её на весь экран.
-  // В обычном браузере этого объекта нет, и ничего не происходит.
-  try {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-      window.Telegram.WebApp.setHeaderColor('#12262b');
+  // Если игра открыта внутри Telegram: разворачиваем на весь экран,
+  // берём светлую или тёмную тему из Telegram и красим шапку под дизайн.
+  // В обычном браузере объекта Telegram нет, и ничего не происходит.
+  function setupTelegram() {
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (!tg) return;
+
+    function applyTheme() {
+      try {
+        var root = document.documentElement;
+        root.setAttribute('data-theme', tg.colorScheme === 'light' ? 'light' : 'dark');
+        var css = getComputedStyle(root);
+        var header = css.getPropertyValue('--tg-header').trim();
+        var bg = css.getPropertyValue('--tg-bg').trim();
+        if (header && tg.setHeaderColor) tg.setHeaderColor(header);
+        if (bg && tg.setBackgroundColor) tg.setBackgroundColor(bg);
+      } catch (e) { /* старая версия Telegram: игра всё равно работает */ }
     }
-  } catch (e) { /* старая версия Telegram: игра всё равно работает */ }
+
+    try {
+      tg.ready();
+      tg.expand();
+      applyTheme();
+      if (tg.onEvent) tg.onEvent('themeChanged', applyTheme);
+    } catch (e) { /* игнорируем */ }
+  }
+  setupTelegram();
 
   var STORAGE_KEY = 'goal-quest-v1';
   var XP_PER_LEVEL = 100;
@@ -137,7 +155,7 @@
     els.level.textContent = levelOf(xp);
     els.xpFill.style.width = inLevel + '%';
     els.xpBar.setAttribute('aria-valuenow', inLevel);
-    els.xpText.textContent = inLevel + ' / ' + XP_PER_LEVEL + ' опыта до следующего уровня';
+    els.xpText.textContent = inLevel + ' / ' + XP_PER_LEVEL + ' опыта';
   }
 
   function renderGoals() {
