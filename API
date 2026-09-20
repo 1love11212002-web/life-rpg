@@ -1,1 +1,36 @@
+module.exports = async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  const { goal, category, deadline } = req.body || {};
+  if (!goal || typeof goal !== 'string' || goal.length > 80) {
+    return res.status(400).json({ error: 'Bad request' });
+  }
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 800,
+        system: 'Ты помощник в игре про цели. Верни ТОЛЬКО JSON-массив из 5 квестов вида [{"text":"...","xp":15}]. Квесты короткие, конкретные, выполнимые за один день. xp от 10 до 25. Пиши по-русски.',
+        messages: [{
+          role: 'user',
+          content: `Цель: ${goal}\nКатегория: ${category}\nСрок: ${deadline || 'не указан'}`,
+        }],
+      }),
+    });
+
+    if (!r.ok) return res.status(502).json({ error: 'AI error' });
+
+    const data = await r.json();
+    const text = data.content[0].text.replace(/```json|```/g, '').trim();
+    return res.status(200).json(JSON.parse(text));
+  } catch (e) {
+    return res.status(502).json({ error: 'AI error' });
+  }
+};
