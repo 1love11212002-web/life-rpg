@@ -1,6 +1,16 @@
 (function () {
   'use strict';
 
+  // Если игра открыта внутри Telegram, разворачиваем её на весь экран.
+  // В обычном браузере этого объекта нет, и ничего не происходит.
+  try {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+      window.Telegram.WebApp.setHeaderColor('#12262b');
+    }
+  } catch (e) { /* старая версия Telegram: игра всё равно работает */ }
+
   var STORAGE_KEY = 'goal-quest-v1';
   var XP_PER_LEVEL = 100;
   var BOSS_BONUS = 50;
