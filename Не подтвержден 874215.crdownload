@@ -246,3 +246,19 @@
 
   render();
 })();
+async function fetchAiQuests(title, category, deadline) {
+  try {
+    var res = await fetch('/api/quests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goal: title, category: category, deadline: deadline })
+    });
+    if (!res.ok) throw new Error('bad response');
+    var list = await res.json();
+    return list.slice(0, 5).map(function (q, i) {
+      return { id: i + 1, text: String(q.text), xp: Math.min(25, Math.max(5, Number(q.xp) || 10)), done: false };
+    });
+  } catch (e) {
+    return makeQuests(title, category); // запасной вариант без ИИ
+  }
+}
