@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Goal Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Unbounded:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="brand">Goal Quest</p>
+      <div class="level-row">
+        <div class="level" aria-label="Текущий уровень">
+          <span class="level-word">Уровень</span>
+          <span class="level-num" id="level">1</span>
+        </div>
+        <div class="xp">
+          <div class="xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xpBar">
+            <div class="xp-fill" id="xpFill"></div>
+          </div>
+          <p class="xp-text" id="xpText">0 / 100 опыта</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="add" aria-labelledby="addTitle">
+      <h2 id="addTitle">Новая цель</h2>
+      <form id="goalForm" autocomplete="off">
+        <label class="field">
+          <span>Что ты хочешь получить?</span>
+          <input id="goalTitle" type="text" maxlength="80" placeholder="Например: выучить 500 английских слов" required>
+        </label>
+        <div class="row">
+          <label class="field">
+            <span>Категория</span>
+            <select id="goalCategory">
+              <option value="study">Учёба</option>
+              <option value="sport">Спорт</option>
+              <option value="money">Финансы</option>
+              <option value="other">Другое</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Срок (по желанию)</span>
+            <input id="goalDeadline" type="date">
+          </label>
+        </div>
+        <button class="btn" id="submitBtn" type="submit">Получить квесты</button>
+      </form>
+    </section>
+
+    <section class="goals" aria-labelledby="goalsTitle">
+      <h2 id="goalsTitle">Мои цели</h2>
+      <div id="goalList"></div>
+      <p class="empty" id="empty">Пока целей нет. Добавь первую выше, и игра выдаст задания для неё.</p>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
